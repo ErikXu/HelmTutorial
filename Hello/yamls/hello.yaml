@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hello
+  labels:
+    app: hello
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      nodeSelector:
+        kubernetes.io/role: node
+      containers:
+      - name: hello
+        image: hello:1.0.0
+        ports:
+        - containerPort: 8080
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: hello
+  labels:
+    app: hello
+  namespace: default
+spec:
+  selector:
+    app: hello
+  type: NodePort
+  ports:
+  - name: hello
+    nodePort: 30010
+    port: 8080
+    protocol: TCP
+    targetPort: 8080

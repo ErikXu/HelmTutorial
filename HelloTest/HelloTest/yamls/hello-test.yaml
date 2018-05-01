@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hello-test
+  labels:
+    app: hello-test
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hello-test
+    spec:
+      nodeSelector:
+        kubernetes.io/role: node
+      containers:
+      - name: hello-test
+        image: hello-test:1.0.0
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      volumes:
+      - name: config-volume
+        configMap:
+          name: hello-test-config
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: hello-test
+  labels:
+    app: hello-test
+  namespace: default
+spec:
+  selector:
+    app: hello-test
+  type: NodePort
+  ports:
+  - name: hello-test
+    nodePort: 30011
+    port: 5000
+    protocol: TCP
+    targetPort: 5000

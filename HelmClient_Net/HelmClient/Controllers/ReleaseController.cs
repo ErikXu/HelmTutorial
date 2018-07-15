@@ -19,6 +19,7 @@ namespace HelmClient.Controllers
             using (var stream = new MemoryStream())
             {
                 await file.CopyToAsync(stream);
+                stream.Position = 0;
                 var chart = ChartPackage.Open(stream);
                 var release = await client.InstallRelease(chart.Serialize(), string.Empty, name, true);
                 return Ok(release.Manifest);

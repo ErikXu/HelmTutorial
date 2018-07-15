@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: helm-client
+  labels:
+    app: helm-client
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: helm-client
+    spec:
+      nodeSelector:
+        kubernetes.io/role: node
+      containers:
+      - name: helm-client
+        image: helm-client:1.0.0
+        ports:
+        - containerPort: 5000
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: helm-client
+  labels:
+    app: helm-client
+  namespace: default
+spec:
+  selector:
+    app: helm-client
+  type: NodePort
+  ports:
+  - name: helm-client
+    nodePort: 30000
+    port: 5000
+    protocol: TCP
+    targetPort: 5000
